@@ -5,39 +5,63 @@ import type {
   EnergyObject,
 } from "../types";
 
-// Возможные действия пользователя
+// ==========================================
+// 1. СПИСОК ВОЗМОЖНЫХ ДЕЙСТВИЙ
+// ==========================================
+
 export type Permission =
+  | "view_platform_overview"
   | "view_dashboard"
   | "view_measurements"
   | "view_events"
+  | "view_services"
+  | "view_history"
   | "compare_objects"
   | "acknowledge_events"
-  | "manage_hub_settings"
-  | "manage_services"
-  | "manage_users"
-  | "manage_platform";
+  | "change_limits"
+  | "manage_operating_modes"
+  | "manage_maintenance"
+  | "add_prepared_object"
+  | "add_asset"
+  | "manage_service_catalog"
+  | "connect_services"
+  | "disconnect_services"
+  | "configure_service";
 
-// Права каждой роли
+// ==========================================
+// 2. ПРАВА ЧЕТЫРЁХ РОЛЕЙ
+// ==========================================
+
 export const ROLE_PERMISSIONS: Record<
   UserRole,
   readonly Permission[]
 > = {
   platform_admin: [
+    "view_platform_overview",
     "view_dashboard",
     "view_measurements",
     "view_events",
+    "view_services",
+    "view_history",
     "compare_objects",
     "acknowledge_events",
-    "manage_hub_settings",
-    "manage_services",
-    "manage_users",
-    "manage_platform",
+    "change_limits",
+    "manage_operating_modes",
+    "manage_maintenance",
+    "add_prepared_object",
+    "add_asset",
+    "manage_service_catalog",
+    "connect_services",
+    "disconnect_services",
+    "configure_service",
   ],
 
   portfolio_owner: [
     "view_dashboard",
     "view_measurements",
     "view_events",
+    "view_services",
+    "view_history",
     "compare_objects",
   ],
 
@@ -45,18 +69,29 @@ export const ROLE_PERMISSIONS: Record<
     "view_dashboard",
     "view_measurements",
     "view_events",
+    "view_services",
+    "view_history",
     "acknowledge_events",
-    "manage_hub_settings",
+    "change_limits",
+    "manage_operating_modes",
+    "manage_maintenance",
+    "add_prepared_object",
+    "add_asset",
   ],
 
   building_owner: [
     "view_dashboard",
     "view_measurements",
     "view_events",
+    "view_services",
+    "view_history",
   ],
 };
 
-// Проверка наличия определённого права
+// ==========================================
+// 3. ПРОВЕРКА ПРАВ
+// ==========================================
+
 export function hasRolePermission(
   role: UserRole,
   permission: Permission
@@ -64,17 +99,21 @@ export function hasRolePermission(
   return ROLE_PERMISSIONS[role].includes(permission);
 }
 
-// Проверка доступа пользователя к объекту
+// ==========================================
+// 4. ПРОВЕРКА ДОСТУПА К ОБЪЕКТУ
+// ==========================================
+
 export function canAccessObject(
   user: User,
   object: EnergyObject
 ): boolean {
-  // Администратор имеет доступ ко всем объектам
+
+  // Администратор видит всю платформу
   if (user.role === "platform_admin") {
     return true;
   }
 
-  // Владелец портфеля видит объекты своего портфеля
+  // Владелец портфеля видит свои объекты
   if (user.role === "portfolio_owner") {
     return (
       object.portfolioId !== undefined &&
@@ -82,11 +121,26 @@ export function canAccessObject(
     );
   }
 
-  // Оператор и собственник видят назначенные им объекты
-  return user.objectIds?.includes(object.id) === true;
+  // Оператор видит только назначенные ему объекты
+  if (user.role === "hub_operator") {
+    return user.objectIds?.includes(object.id) === true;
+  }
+
+  // Собственник видит только своё здание
+  if (user.role === "building_owner") {
+    return (
+      object.type === "building" &&
+      user.objectIds?.includes(object.id) === true
+    );
+  }
+
+  return false;
 }
 
-// Комплексная проверка действия над объектом
+// ==========================================
+// 5. КОМПЛЕКСНАЯ ПРОВЕРКА ДЕЙСТВИЯ
+// ==========================================
+
 export function canPerformOnObject(
   user: User,
   permission: Permission,
@@ -95,5 +149,18 @@ export function canPerformOnObject(
   return (
     hasRolePermission(user.role, permission) &&
     canAccessObject(user, object)
+  );
+}
+
+// ==========================================
+// 6. ПРОВЕРКА РЕЖИМА ТОЛЬКО ДЛЯ ЧТЕНИЯ
+// ==========================================
+
+export function isReadOnlyRole(
+  role: UserRole
+): boolean {
+  return (
+    role === "portfolio_owner" ||
+    role === "building_owner"
   );
 }
