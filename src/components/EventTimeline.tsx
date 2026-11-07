@@ -1,4 +1,10 @@
-import { CalendarClock, Info, AlertTriangle, AlertCircle, CircleDot } from 'lucide-react';
+import {
+  CalendarClock,
+  Info,
+  AlertTriangle,
+  AlertCircle,
+  CircleDot,
+} from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { EventView } from '../types/ui';
 
@@ -7,47 +13,86 @@ export interface EventTimelineProps {
   onEventSelect?: (eventId: string) => void;
 }
 
-const eventIcons: Record<string, LucideIcon> = {
-  info: Info,
-  warning: AlertTriangle,
-  critical: AlertCircle,
+const eventPresentation: Record<string, { icon: LucideIcon; label: string }> = {
+  info: { icon: Info, label: 'Информация' },
+  warning: { icon: AlertTriangle, label: 'Предупреждение' },
+  critical: { icon: AlertCircle, label: 'Критично' },
 };
+
+function eventCountLabel(count: number): string {
+  const lastTwo = count % 100;
+  const lastOne = count % 10;
+
+  if (lastTwo >= 11 && lastTwo <= 14) return `${count} событий`;
+  if (lastOne === 1) return `${count} событие`;
+  if (lastOne >= 2 && lastOne <= 4) return `${count} события`;
+  return `${count} событий`;
+}
 
 export function EventTimeline({ events, onEventSelect }: EventTimelineProps) {
   return (
-    <section className="panel timeline-panel" id="history">
+    <section className="panel timeline-panel" id="history" aria-labelledby="event-history-title">
       <div className="panel-heading">
         <div className="panel-title-wrap">
-          <div className="panel-icon"><CalendarClock size={17} /></div>
-          <div><h2>История событий</h2><p>События и проблемы выбранного EnergyObject</p></div>
+          <div className="panel-icon">
+            <CalendarClock size={17} />
+          </div>
+          <div>
+            <h2 id="event-history-title">История событий</h2>
+            <p>События и проблемы выбранного EnergyObject</p>
+          </div>
         </div>
-        <span className="panel-count">{events.length} событий</span>
+        <span className="panel-count">{eventCountLabel(events.length)}</span>
       </div>
+
       <div className="timeline-list">
-        {events.length === 0 ? <div className="empty-state">История пока пуста</div> : events.map((event, index) => {
-          const Icon = eventIcons[event.severity] ?? CircleDot;
-          return (
-            <button
-              type="button"
-              className="timeline-item timeline-item--button"
-              key={event.id}
-              onClick={() => onEventSelect?.(event.id)}
-            >
-              <div className={`timeline-marker event-${event.severity}`}><Icon size={14} /></div>
-              <div className="timeline-body">
-                <div className="timeline-meta"><span>{event.timestamp}</span><span>{event.status}</span></div>
-                <strong>{event.title}</strong>
-                <p>{event.description}</p>
-                <div className="timeline-footer">
-                  <span className={`event-type event-type-${event.severity}`}>{event.severity}</span>
-                  {event.relatedAssetLabel && <span className="timeline-asset">{event.relatedAssetLabel}</span>}
-                </div>
-              </div>
-              {index !== events.length - 1 && <div className="timeline-stem" />}
-            </button>
-          );
-        })}
+        {events.length === 0 ? (
+          <div className="empty-state">История пока пуста</div>
+        ) : (
+          events.map((event, index) => {
+            const presentation = eventPresentation[event.severity] ?? {
+              icon: CircleDot,
+              label: 'Другое событие',
+            };
+            const Icon = presentation.icon;
+
+            return (
+              <button
+                type="button"
+                className="timeline-item timeline-item--button"
+                key={event.id}
+                onClick={() => onEventSelect?.(event.id)}
+                aria-label={`${event.title}. ${presentation.label}. ${event.timestamp}. ${event.status}`}
+              >
+                <span className={`timeline-marker event-${event.severity}`}>
+                  <Icon size={14} />
+                </span>
+
+                <span className="timeline-body">
+                  <span className="timeline-meta">
+                    <span>{event.timestamp}</span>
+                    <span className="timeline-status">{event.status}</span>
+                  </span>
+                  <strong>{event.title}</strong>
+                  <span className="timeline-description">{event.description}</span>
+                  <span className="timeline-footer">
+                    <span className={`event-type event-type-${event.severity}`}>
+                      {presentation.label}
+                    </span>
+                    {event.relatedAssetLabel && (
+                      <span className="timeline-asset">{event.relatedAssetLabel}</span>
+                    )}
+                  </span>
+                </span>
+
+                {index !== events.length - 1 && <span className="timeline-stem" />}
+              </button>
+            );
+          })
+        )}
       </div>
     </section>
   );
 }
+
+export default EventTimeline;
