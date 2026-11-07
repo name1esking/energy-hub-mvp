@@ -1,21 +1,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CalendarDays, ChevronRight, Sparkles } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
 
 import { HubOperatorDashboard } from './dashboards/HubOperatorDashboard';
 import { PlatformAdminDashboard } from './dashboards/PlatformAdminDashboard';
 import { PortfolioOwnerDashboard } from './dashboards/PortfolioOwnerDashboard';
+import { BuildingOwnerDashboard } from './dashboards/BuildingOwnerDashboard';
 
-import { AssetQuickView } from './AssetQuickView';
-import { AlertsPanel } from './AlertsPanel';
-import { DataQualityPanel } from './DataQualityPanel';
-import { EnergyFlow } from './EnergyFlow';
-import { EventTimeline } from './EventTimeline';
-import { EnergyObjectCard } from './EnergyObjectCard';
 import { Header } from './Header';
-import { MetricCard } from './MetricCard';
-import { PowerChart } from './PowerChart';
-import { ServicesPanel } from './ServicesPanel';
 import { Sidebar } from './Sidebar';
 
 import type {
@@ -358,103 +350,28 @@ export function EnergyHubLayout({
             />
           )}
 
-          {/* ==================================
-              BUILDING OWNER TEMPORARY DASHBOARD
-          ================================== */}
-
+          {/* BUILDING OWNER DASHBOARD */}
           {role === 'building_owner' && (
-            <>
-              <section
-                className="metrics-grid"
-                aria-label="Ключевые показатели"
-              >
-                {metrics.map((metric) => (
-                  <MetricCard
-                    key={metric.id}
-                    metric={metric}
-                  />
-                ))}
-              </section>
-
-              <div className="dashboard-grid">
-
-                <div className="dashboard-main-column">
-
-                  <EnergyFlow
-                    assets={assets}
-                    topology={topology}
-                    selectedAssetId={selectedAssetId}
-                    onSelectAsset={handleAssetSelect}
-                  />
-
-                  <PowerChart
-                    theme={theme}
-                    period={period}
-                    data={chartData}
-                  />
-
-                  <EventTimeline
-                    events={events}
-                    onEventSelect={onEventSelect}
-                  />
-
-                </div>
-
-                <aside className="dashboard-side-column">
-
-                  <EnergyObjectCard
-                    energyObject={energyObject}
-                  />
-
-                  <AlertsPanel
-                    events={events}
-                    onEventSelect={onEventSelect}
-                  />
-
-                  <DataQualityPanel
-                    rows={qualityRows}
-                    onCellSelect={onMeasurementSelect}
-                  />
-
-                  <AssetQuickView
-                    asset={selectedAsset}
-                    onClose={handleAssetReset}
-                  />
-
-                  <ServicesPanel
-                    services={services}
-                    onServiceSelect={onServiceSelect}
-                  />
-
-                  <section className="demo-info-card">
-
-                    <div className="demo-info-icon">
-                      <Sparkles size={17} />
-                    </div>
-
-                    <div>
-                      <strong>
-                        Демонстрационный режим
-                      </strong>
-
-                      <p>
-                        UI получает представления
-                        EnergyObject, Asset, Measurement,
-                        Event и Service через props.
-                        Значения демо не являются
-                        фактической телеметрией.
-                      </p>
-                    </div>
-
-                    <ChevronRight size={16} />
-
-                  </section>
-
-                </aside>
-              </div>
-            </>
+            <BuildingOwnerDashboard
+              energyObject={energyObject}
+              assets={assets}
+              metrics={metrics}
+              events={events}
+              services={services}
+              chartData={chartData}
+              qualityRows={qualityRows}
+              topology={topology}
+              theme={theme}
+              period={period}
+              selectedAsset={selectedAsset}
+              selectedAssetId={selectedAssetId}
+              onAssetSelect={handleAssetSelect}
+              onAssetReset={handleAssetReset}
+              onEventSelect={onEventSelect}
+              onServiceSelect={onServiceSelect}
+              onMeasurementSelect={onMeasurementSelect}
+            />
           )}
-
           {/* FOOTER */}
           <footer className="dashboard-footer">
 

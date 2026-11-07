@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   font-family: 'DM Sans', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -2554,5 +2554,216 @@ button.heatmap-cell:disabled {
 @media (prefers-reduced-motion: reduce) {
   .portfolio-asset-item {
     transition: none;
+  }
+}
+
+/* BUILDING OWNER DASHBOARD */
+.role-dashboard--building {
+  display: grid;
+  gap: 16px;
+}
+
+.building-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.building-section-heading h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.building-section-heading p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.building-scope-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
+  border-radius: 999px;
+  color: var(--success);
+  background: color-mix(in srgb, var(--success) 9%, transparent);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .09em;
+}
+
+.building-scope-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 14%, transparent);
+}
+
+.building-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(280px, .85fr);
+  align-items: start;
+  gap: 16px;
+}
+
+.building-main-column,
+.building-side-column {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 16px;
+}
+
+.building-object-panel,
+.building-status-panel {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.building-flow-section {
+  display: grid;
+  min-width: 0;
+  gap: 9px;
+}
+
+.building-subsection-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 2px;
+}
+
+.building-subsection-heading h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.building-subsection-heading p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.building-object-count {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  color: var(--muted);
+  background: var(--surface-2);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.building-panel-note {
+  margin: 10px 14px 13px;
+  padding: 9px 11px;
+  border-left: 2px solid var(--accent);
+  border-radius: 0 7px 7px 0;
+  color: var(--muted);
+  background: var(--surface-2);
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.building-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  padding: 0 14px 14px;
+}
+
+.building-stat-card {
+  --building-stat-tone: var(--blue);
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 9px;
+  row-gap: 3px;
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid var(--border-soft);
+  border-radius: 11px;
+  background: var(--surface-2);
+}
+
+.building-stat-card--online {
+  --building-stat-tone: var(--success);
+}
+
+.building-stat-card--attention {
+  --building-stat-tone: var(--warning);
+}
+
+.building-stat-card--events {
+  --building-stat-tone: var(--danger);
+}
+
+.building-stat-card--services {
+  --building-stat-tone: var(--blue);
+}
+
+.building-stat-icon {
+  display: grid;
+  grid-row: span 2;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: var(--building-stat-tone);
+  background: color-mix(in srgb, var(--building-stat-tone) 12%, transparent);
+}
+
+.building-stat-card strong {
+  min-width: 0;
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.building-stat-card small {
+  min-width: 0;
+  color: var(--muted);
+  font-size: 8px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.building-history-section {
+  min-width: 0;
+}
+
+@media (max-width: 1080px) {
+  .building-dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .building-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .building-status-grid {
+    gap: 7px;
+    padding-right: 11px;
+    padding-left: 11px;
+  }
+
+  .building-stat-card {
+    padding: 9px;
   }
 }
