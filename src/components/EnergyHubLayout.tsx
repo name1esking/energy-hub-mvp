@@ -4,6 +4,7 @@ import { CalendarDays, ChevronRight, Sparkles } from 'lucide-react';
 
 import { HubOperatorDashboard } from './dashboards/HubOperatorDashboard';
 import { PlatformAdminDashboard } from './dashboards/PlatformAdminDashboard';
+import { PortfolioOwnerDashboard } from './dashboards/PortfolioOwnerDashboard';
 
 import { AssetQuickView } from './AssetQuickView';
 import { AlertsPanel } from './AlertsPanel';
@@ -257,7 +258,7 @@ export function EnergyHubLayout({
 
               <div className="object-context">
                 {energyObject.typeLabel ?? 'EnergyObject'}
-                {' · '}
+                {' В· '}
                 {energyObject.locationLabel ??
                   energyObject.name}
               </div>
@@ -334,12 +335,34 @@ export function EnergyHubLayout({
           )}
 
           {/* ==================================
-              PORTFOLIO OWNER / BUILDING OWNER
-              TEMPORARY DASHBOARD
+              PORTFOLIO OWNER DASHBOARD
+          ================================== */}
+          {role === 'portfolio_owner' && (
+            <PortfolioOwnerDashboard
+              energyObject={energyObject}
+              assets={assets}
+              metrics={metrics}
+              events={events}
+              services={services}
+              chartData={chartData}
+              qualityRows={qualityRows}
+              theme={theme}
+              period={period}
+              selectedAsset={selectedAsset}
+              selectedAssetId={selectedAssetId}
+              onAssetSelect={handleAssetSelect}
+              onAssetReset={handleAssetReset}
+              onEventSelect={onEventSelect}
+              onServiceSelect={onServiceSelect}
+              onMeasurementSelect={onMeasurementSelect}
+            />
+          )}
+
+          {/* ==================================
+              BUILDING OWNER TEMPORARY DASHBOARD
           ================================== */}
 
-          {(role === 'portfolio_owner' ||
-            role === 'building_owner') && (
+          {role === 'building_owner' && (
             <>
               <section
                 className="metrics-grid"
@@ -438,7 +461,7 @@ export function EnergyHubLayout({
             <span>ENERGY HUB MVP</span>
 
             <span>
-              UI presentation layer · no backend
+              UI presentation layer В· no backend
             </span>
 
             <span className="footer-status">
