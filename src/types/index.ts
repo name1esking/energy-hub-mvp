@@ -2,7 +2,10 @@
 /**
  * ENERGY HUB
  * Общие типы данных приложения
- * Version: 0.1
+ * Version: 0.2
+ *
+ * Основа: DATA_MODEL.md v0.1
+ * и согласованные решения Tech Lead.
  */
 
 // ==========================================
@@ -21,7 +24,7 @@ export interface User {
   email?: string;
   role: UserRole;
   portfolioIds?: string[];
-  objectIds?: string[];
+  siteIds?: string[];
 }
 
 // ==========================================
@@ -31,35 +34,26 @@ export interface User {
 export interface Portfolio {
   id: string;
   name: string;
-  description?: string;
-  objectIds: string[];
 }
 
 // ==========================================
-// 3. ЭНЕРГЕТИЧЕСКИЕ ОБЪЕКТЫ
+// 3. ЭНЕРГЕТИЧЕСКИЕ ОБЪЕКТЫ (SITE)
 // ==========================================
 
-export type EnergyObjectType =
-  | "building"
+/**
+ * Предварительный справочник типов объектов.
+ * Требует окончательного утверждения Tech Lead.
+ */
+export type SiteType =
   | "industrial"
-  | "energy_hub"
-  | "other";
+  | "office";
 
-export type EnergyObjectStatus =
-  | "active"
-  | "inactive"
-  | "maintenance"
-  | "unknown";
-
-export interface EnergyObject {
+export interface Site {
   id: string;
   name: string;
-  type: EnergyObjectType;
-  address?: string;
-  timezone: string;
-  status: EnergyObjectStatus;
-  portfolioId?: string;
-  assetIds: string[];
+  location: string;
+  type: SiteType;
+  portfolioId: string;
 }
 
 // ==========================================
@@ -68,28 +62,30 @@ export interface EnergyObject {
 
 export type AssetType =
   | "solar_panel"
-  | "inverter"
   | "battery"
+  | "inverter"
   | "meter"
-  | "ev_charger"
-  | "grid_connection"
-  | "load"
-  | "other";
+  | "charger"
+  | "load";
 
 export type AssetStatus =
   | "online"
   | "offline"
   | "warning"
-  | "maintenance"
-  | "unknown";
+  | "error";
 
+/**
+ * Параметры оборудования.
+ * Конкретный состав зависит от типа оборудования.
+ */
 export interface Asset {
   id: string;
-  objectId: string;
+  siteId: string;
   name: string;
   type: AssetType;
   manufacturer?: string;
   status: AssetStatus;
+  parameters?: Record<string, unknown>;
 }
 
 // ==========================================
@@ -97,29 +93,33 @@ export interface Asset {
 // ==========================================
 
 export type MeasurementMetric =
-  | "power"
-  | "energy"
-  | "generation"
-  | "consumption"
-  | "grid_import"
-  | "grid_export"
-  | "battery_soc";
+  | "consumption_power"
+  | "generation_power"
+  | "consumption_energy"
+  | "generation_energy"
+  | "grid_export_energy"
+  | "battery_soc"
+  | "power_limit";
 
 export type MeasurementUnit =
-  | "kW"
-  | "kWh"
+  | "кВт"
+  | "кВт·ч"
   | "%";
 
+/**
+ * Статусы качества исходных данных.
+ * Все пять статусов необходимо сохранять.
+ */
 export type DataQualityStatus =
-  | "valid"
+  | "complete"
   | "missing"
-  | "suspicious"
-  | "invalid";
+  | "stale"
+  | "estimated"
+  | "simulated";
 
 export interface Measurement {
   id: string;
-  objectId: string;
-  assetId?: string;
+  siteId: string;
   metric: MeasurementMetric;
   value: number | null;
   unit: MeasurementUnit;
@@ -137,19 +137,17 @@ export type EventSeverity =
   | "critical";
 
 export type EventStatus =
-  | "new"
-  | "acknowledged"
+  | "open"
   | "resolved";
 
-export interface EnergyEvent {
+export interface Event {
   id: string;
-  objectId: string;
-  assetId?: string;
+  siteId: string;
   title: string;
   description: string;
   severity: EventSeverity;
-  createdAt: string;
   status: EventStatus;
+  timestamp: string;
 }
 
 // ==========================================
@@ -160,17 +158,25 @@ export type ServiceType =
   | "peak_shaving"
   | "pv_self_consumption";
 
-export type ServiceStatus =
+/**
+ * Предварительные статусы сервиса.
+ * Требуют отдельного согласования.
+ */
+export type ServiceInstanceStatus =
   | "connected"
   | "disconnected"
   | "error"
   | "configuring";
 
-export interface EnergyService {
+/**
+ * Предварительный контракт ServiceInstance.
+ * Не означает наличие реальных подключённых сервисов.
+ */
+export interface ServiceInstance {
   id: string;
+  siteId: string;
   type: ServiceType;
-  objectId: string;
-  status: ServiceStatus;
+  status: ServiceInstanceStatus;
   configuration: Record<string, unknown>;
   connectedAt?: string;
 }

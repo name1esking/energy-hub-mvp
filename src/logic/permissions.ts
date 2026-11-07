@@ -2,7 +2,7 @@
 import type {
   User,
   UserRole,
-  EnergyObject,
+  Site,
 } from "../types";
 
 // ==========================================
@@ -71,12 +71,6 @@ export const ROLE_PERMISSIONS: Record<
     "view_events",
     "view_services",
     "view_history",
-    "acknowledge_events",
-    "change_limits",
-    "manage_operating_modes",
-    "manage_maintenance",
-    "add_prepared_object",
-    "add_asset",
   ],
 
   building_owner: [
@@ -89,7 +83,7 @@ export const ROLE_PERMISSIONS: Record<
 };
 
 // ==========================================
-// 3. ПРОВЕРКА ПРАВ
+// 3. ПРОВЕРКА ПРАВ РОЛИ
 // ==========================================
 
 export function hasRolePermission(
@@ -100,55 +94,48 @@ export function hasRolePermission(
 }
 
 // ==========================================
-// 4. ПРОВЕРКА ДОСТУПА К ОБЪЕКТУ
+// 4. ПРОВЕРКА ДОСТУПА К SITE
 // ==========================================
 
-export function canAccessObject(
+export function canAccessSite(
   user: User,
-  object: EnergyObject
+  site: Site
 ): boolean {
-
-  // Администратор видит всю платформу
+  // Администратор видит все объекты.
   if (user.role === "platform_admin") {
     return true;
   }
 
-  // Владелец портфеля видит свои объекты
+  // Владелец портфеля видит только свой портфель.
   if (user.role === "portfolio_owner") {
-    return (
-      object.portfolioId !== undefined &&
-      user.portfolioIds?.includes(object.portfolioId) === true
-    );
+    return user.portfolioIds?.includes(site.portfolioId) === true;
   }
 
-  // Оператор видит только назначенные ему объекты
+  // Оператор видит только назначенные объекты.
   if (user.role === "hub_operator") {
-    return user.objectIds?.includes(object.id) === true;
+    return user.siteIds?.includes(site.id) === true;
   }
 
-  // Собственник видит только своё здание
+  // Собственник видит только назначенные объекты.
   if (user.role === "building_owner") {
-    return (
-      object.type === "building" &&
-      user.objectIds?.includes(object.id) === true
-    );
+    return user.siteIds?.includes(site.id) === true;
   }
 
   return false;
 }
 
 // ==========================================
-// 5. КОМПЛЕКСНАЯ ПРОВЕРКА ДЕЙСТВИЯ
+// 5. ПРОВЕРКА ВОЗМОЖНОСТИ ДЕЙСТВИЯ
 // ==========================================
 
-export function canPerformOnObject(
+export function canPerformOnSite(
   user: User,
   permission: Permission,
-  object: EnergyObject
+  site: Site
 ): boolean {
   return (
-    hasRolePermission(user.role, permission) &&
-    canAccessObject(user, object)
+    canAccessSite(user, site) &&
+    hasRolePermission(user.role, permission)
   );
 }
 
@@ -161,6 +148,7 @@ export function isReadOnlyRole(
 ): boolean {
   return (
     role === "portfolio_owner" ||
+    role === "hub_operator" ||
     role === "building_owner"
   );
 }
