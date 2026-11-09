@@ -384,7 +384,7 @@ export function EnergyHubLayout({
                     data={chartData}
                   />
 
-                  <EventTimeline events={events} onEventSelect={onEventSelect} />
+                  <EventTimeline events={events} />
 
                 </div>
 

@@ -96,7 +96,7 @@ export function HubOperatorDashboard({
               onEventSelect={onEventSelect}
             />
 
-            <EventTimeline events={events} onEventSelect={onEventSelect} />
+            <EventTimeline events={events} />
           </section>
 
         </div>
