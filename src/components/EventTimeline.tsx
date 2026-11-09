@@ -71,15 +71,9 @@ export function EventTimeline({ events, onEventSelect }: EventTimelineProps) {
             };
             const Icon = presentation.icon;
 
-            return (
-              <button
-                type="button"
-                disabled={!onEventSelect}
-                className="timeline-item timeline-item--button"
-                key={event.id}
-                onClick={() => onEventSelect?.(event.id)}
-                aria-label={`${event.title}. ${presentation.label}. ${event.timestamp}. ${eventStatusLabel(event.status)}`}
-              >
+            const content = (
+              <>
+
                 <span className={`timeline-marker event-${event.severity}`}>
                   <Icon size={14} />
                 </span>
@@ -102,7 +96,24 @@ export function EventTimeline({ events, onEventSelect }: EventTimelineProps) {
                 </span>
 
                 {index !== events.length - 1 && <span className="timeline-stem" />}
+
+              </>
+            );
+
+            return onEventSelect ? (
+              <button
+                type="button"
+                className="timeline-item timeline-item--button"
+                key={event.id}
+                onClick={() => onEventSelect(event.id)}
+                aria-label={`${event.title}. ${presentation.label}. ${event.timestamp}. ${eventStatusLabel(event.status)}`}
+              >
+                {content}
               </button>
+            ) : (
+              <div className="timeline-item" key={event.id}>
+                {content}
+              </div>
             );
           })
         )}
