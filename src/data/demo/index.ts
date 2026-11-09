@@ -1,0 +1,11 @@
+/** Публичная точка входа; только данные DATA_MODEL.md и чистые selector-функции. */
+export { portfolios, sites } from './sites.ts'
+export { assets, getSiteAssets } from './equipment.ts'
+export { measurements, HISTORY_START_UTC, HISTORY_DAYS, INTERVAL_MINUTES } from './readings.ts'
+export { events } from './events.ts'
+export { invalidMeasurementExamples } from './invalidExamples.ts'
+export { METRIC_IDS } from './types.ts'
+export { metricDictionary, dataQualityDictionary, derivedMetricDictionary, formatMetric } from './metrics.ts'
+export { getSiteMeasurements, getSiteEvents, getMeasurementAt, getLatestMeasurement, getSiteDataQuality, getGridExchangeAt, getLimitExcessPowerKw, getDailyEnergySummaries, getSiteSnapshot } from './selectors.ts'
+export { validateMeasurement, validateDemoData, validateInvalidFixtures, assertDemoDataValid, getValidationStats } from './validate.ts'
+export type { Portfolio, Site, Asset, AssetType, AssetStatus, Measurement, MetricId, MeasurementQuality, Unit, Event, EventSeverity, EventStatus, SiteId, DataQualitySummary, DailyEnergySummary } from './types.ts'

@@ -1,6 +1,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CalendarDays, ChevronRight, Sparkles } from 'lucide-react';
+import { CalendarDays, ChevronDown, ChevronRight, Sparkles } from 'lucide-react';
 
 import { HubOperatorDashboard } from './dashboards/HubOperatorDashboard';
 import { PlatformAdminDashboard } from './dashboards/PlatformAdminDashboard';
@@ -38,26 +38,19 @@ const roleDescriptions: Record<
 > = {
   platform_admin: {
     title: 'Обзор платформы',
-    description:
-      'Объекты и подключённые энергетические сервисы платформы.',
+    description: 'Объекты и подключённые энергетические сервисы платформы.',
   },
-
   portfolio_owner: {
     title: 'Обзор портфеля',
-    description:
-      'Сводное представление энергообъектов и областей внимания.',
+    description: 'Сводное представление энергообъектов и областей внимания.',
   },
-
   hub_operator: {
     title: 'Мониторинг энергообъекта',
-    description:
-      'Оборудование, потоки энергии, измерения и события выбранного объекта.',
+    description: 'Оборудование, потоки энергии, измерения и события выбранного объекта.',
   },
-
   building_owner: {
     title: 'Мой энергообъект',
-    description:
-      'Потребление, генерация, сервисы и события в режиме просмотра.',
+    description: 'Потребление, генерация, сервисы и события в режиме просмотра.',
   },
 };
 
@@ -86,6 +79,9 @@ export interface EnergyHubLayoutProps {
 
   initialTheme?: ThemeMode;
 
+  siteOptions?: { id: string; name: string }[];
+
+  onSiteChange?: (siteId: string) => void;
   onRoleChange?: (role: UiRole) => void;
   onPeriodChange?: (period: Period) => void;
 
@@ -106,6 +102,8 @@ export function EnergyHubLayout({
   qualityRows,
   topology,
   initialTheme = 'dark',
+  siteOptions,
+  onSiteChange,
   onRoleChange,
   onPeriodChange,
   onAssetSelect,
@@ -113,16 +111,13 @@ export function EnergyHubLayout({
   onServiceSelect,
   onMeasurementSelect,
 }: EnergyHubLayoutProps) {
-
   // Theme
   const [theme, setTheme] = useState<ThemeMode>(() => {
     if (typeof window === 'undefined') {
       return initialTheme;
     }
 
-    const saved = window.localStorage.getItem(
-      'energy-hub-theme',
-    );
+    const saved = window.localStorage.getItem('energy-hub-theme');
 
     return saved === 'light' || saved === 'dark'
       ? saved
@@ -135,8 +130,7 @@ export function EnergyHubLayout({
   const [activePage, setActivePage] =
     useState<SidebarPageId>('overview');
 
-  const [mobileMenuOpen, setMobileMenuOpen] =
-    useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Selected equipment
   const [selectedAssetId, setSelectedAssetId] =
@@ -146,18 +140,13 @@ export function EnergyHubLayout({
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
 
-    window.localStorage.setItem(
-      'energy-hub-theme',
-      theme,
-    );
+    window.localStorage.setItem('energy-hub-theme', theme);
   }, [theme]);
 
   // Selected Asset
   const selectedAsset = useMemo(
     () =>
-      assets.find(
-        (asset) => asset.id === selectedAssetId,
-      ) ?? null,
+      assets.find((asset) => asset.id === selectedAssetId) ?? null,
     [assets, selectedAssetId],
   );
 
@@ -195,6 +184,15 @@ export function EnergyHubLayout({
     [onPeriodChange],
   );
 
+  // Site selection
+  const handleSiteChange = useCallback(
+    (nextSiteId: string) => {
+      setSelectedAssetId(null);
+      onSiteChange?.(nextSiteId);
+    },
+    [onSiteChange],
+  );
+
   // Asset selection
   const handleAssetSelect = useCallback(
     (assetId: string) => {
@@ -227,9 +225,7 @@ export function EnergyHubLayout({
         <Header
           energyObject={energyObject}
           role={role}
-          onRoleChange={(nextRole) =>
-            onRoleChange?.(nextRole)
-          }
+          onRoleChange={(nextRole) => onRoleChange?.(nextRole)}
           theme={theme}
           onThemeChange={setTheme}
           period={period}
@@ -258,12 +254,34 @@ export function EnergyHubLayout({
               <div className="object-context">
                 {energyObject.typeLabel ?? 'EnergyObject'}
                 {' · '}
-                {energyObject.locationLabel ??
-                  energyObject.name}
+                {energyObject.locationLabel ?? energyObject.name}
               </div>
             </div>
 
             <div className="intro-meta">
+
+              {/* ENERGY OBJECT SELECTOR */}
+              {siteOptions && siteOptions.length > 1 && (
+                <label className="select-wrap period-select">
+                  <span className="sr-only">Выбранный энергообъект</span>
+
+                  <select
+                    value={energyObject.id}
+                    onChange={(event) =>
+                      handleSiteChange(event.target.value)
+                    }
+                  >
+                    {siteOptions.map((site) => (
+                      <option key={site.id} value={site.id}>
+                        {site.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  <ChevronDown size={14} />
+                </label>
+              )}
+
               <div className="data-freshness">
                 <span className="freshness-dot" />
                 Демонстрационные данные
@@ -281,10 +299,7 @@ export function EnergyHubLayout({
             </div>
           </section>
 
-          {/* ==================================
-              HUB OPERATOR DASHBOARD
-          ================================== */}
-
+          {/* HUB OPERATOR DASHBOARD */}
           {role === 'hub_operator' && (
             <HubOperatorDashboard
               energyObject={energyObject}
@@ -307,10 +322,7 @@ export function EnergyHubLayout({
             />
           )}
 
-          {/* ==================================
-              PLATFORM ADMIN DASHBOARD
-          ================================== */}
-
+          {/* PLATFORM ADMIN DASHBOARD */}
           {role === 'platform_admin' && (
             <PlatformAdminDashboard
               energyObject={energyObject}
@@ -333,11 +345,7 @@ export function EnergyHubLayout({
             />
           )}
 
-          {/* ==================================
-              PORTFOLIO OWNER / BUILDING OWNER
-              TEMPORARY DASHBOARD
-          ================================== */}
-
+          {/* PORTFOLIO OWNER / BUILDING OWNER */}
           {(role === 'portfolio_owner' ||
             role === 'building_owner') && (
             <>
