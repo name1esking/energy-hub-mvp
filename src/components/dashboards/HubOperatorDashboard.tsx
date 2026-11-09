@@ -72,10 +72,7 @@ export function HubOperatorDashboard({
 
         <div className="dashboard-main-column">
 
-          <section
-            id="energy-hub"
-            className="scroll-anchor"
-          >
+          <section className="scroll-anchor">
             <EnergyFlow
               assets={assets}
               topology={topology}
@@ -93,19 +90,13 @@ export function HubOperatorDashboard({
             />
           </section>
 
-          <section
-            id="history"
-            className="scroll-anchor"
-          >
+          <section className="scroll-anchor">
             <AlertsPanel
               events={events}
               onEventSelect={onEventSelect}
             />
 
-            <EventTimeline
-              events={events}
-              onEventSelect={onEventSelect}
-            />
+            <EventTimeline events={events} />
           </section>
 
         </div>
@@ -127,20 +118,14 @@ export function HubOperatorDashboard({
             />
           </section>
 
-          <section
-            id="data-quality"
-            className="scroll-anchor"
-          >
+          <section className="scroll-anchor">
             <DataQualityPanel
               rows={qualityRows}
               onCellSelect={onMeasurementSelect}
             />
           </section>
 
-          <section
-            id="services"
-            className="scroll-anchor"
-          >
+          <section className="scroll-anchor">
             <ServicesPanel
               services={services}
               onServiceSelect={onServiceSelect}

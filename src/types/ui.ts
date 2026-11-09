@@ -137,6 +137,8 @@ export type SidebarPageId =
   | 'overview'
   | 'energy-hub'
   | 'objects'
+  | 'analytics'
+  | 'notifications'
   | 'services'
   | 'data-quality'
   | 'history';

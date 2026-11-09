@@ -29,6 +29,21 @@ function eventCountLabel(count: number): string {
   return `${count} событий`;
 }
 
+function eventStatusLabel(status: string): string {
+  switch (status) {
+    case 'open':
+      return 'Открыто';
+    case 'resolved':
+      return 'Решено';
+    case 'demo_open':
+      return 'Открыто · демо';
+    case 'demo_planned':
+      return 'Запланировано · демо';
+    default:
+      return status.replace(/_/g, ' ');
+  }
+}
+
 export function EventTimeline({ events, onEventSelect }: EventTimelineProps) {
   return (
     <section className="panel timeline-panel" id="history" aria-labelledby="event-history-title">
@@ -56,14 +71,9 @@ export function EventTimeline({ events, onEventSelect }: EventTimelineProps) {
             };
             const Icon = presentation.icon;
 
-            return (
-              <button
-                type="button"
-                className="timeline-item timeline-item--button"
-                key={event.id}
-                onClick={() => onEventSelect?.(event.id)}
-                aria-label={`${event.title}. ${presentation.label}. ${event.timestamp}. ${event.status}`}
-              >
+            const content = (
+              <>
+
                 <span className={`timeline-marker event-${event.severity}`}>
                   <Icon size={14} />
                 </span>
@@ -71,7 +81,7 @@ export function EventTimeline({ events, onEventSelect }: EventTimelineProps) {
                 <span className="timeline-body">
                   <span className="timeline-meta">
                     <span>{event.timestamp}</span>
-                    <span className="timeline-status">{event.status}</span>
+                    <span className="timeline-status">{eventStatusLabel(event.status)}</span>
                   </span>
                   <strong>{event.title}</strong>
                   <span className="timeline-description">{event.description}</span>
@@ -86,7 +96,24 @@ export function EventTimeline({ events, onEventSelect }: EventTimelineProps) {
                 </span>
 
                 {index !== events.length - 1 && <span className="timeline-stem" />}
+
+              </>
+            );
+
+            return onEventSelect ? (
+              <button
+                type="button"
+                className="timeline-item timeline-item--button"
+                key={event.id}
+                onClick={() => onEventSelect(event.id)}
+                aria-label={`${event.title}. ${presentation.label}. ${event.timestamp}. ${eventStatusLabel(event.status)}`}
+              >
+                {content}
               </button>
+            ) : (
+              <div className="timeline-item" key={event.id}>
+                {content}
+              </div>
             );
           })
         )}

@@ -54,7 +54,7 @@ export function PlatformAdminDashboard({
 
       <div className="dashboard-grid admin-dashboard-grid">
         <div className="dashboard-main-column">
-          <section className="panel admin-objects-panel" aria-labelledby="admin-objects-title">
+          <section id="objects" className="panel admin-objects-panel" aria-labelledby="admin-objects-title">
             <div className="panel-heading">
               <div className="panel-title-wrap">
                 <div className="panel-icon">
@@ -109,7 +109,7 @@ export function PlatformAdminDashboard({
             aria-label="Уведомления и история событий"
           >
             <AlertsPanel events={events} onEventSelect={onEventSelect} />
-            <EventTimeline events={events} onEventSelect={onEventSelect} />
+            <EventTimeline events={events} />
           </section>
         </div>
 

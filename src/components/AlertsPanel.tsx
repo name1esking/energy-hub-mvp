@@ -38,9 +38,24 @@ const fallbackPresentation = {
   priority: 3,
 };
 
+function eventStatusLabel(status: string): string {
+  switch (status) {
+    case 'open':
+      return 'Открыто';
+    case 'resolved':
+      return 'Решено';
+    case 'demo_open':
+      return 'Открыто · демо';
+    case 'demo_planned':
+      return 'Запланировано · демо';
+    default:
+      return status.replace(/_/g, ' ');
+  }
+}
+
 export function AlertsPanel({ events, onEventSelect }: AlertsPanelProps) {
   const attentionEvents = events
-    .filter((event) => event.severity !== 'info')
+    .filter((event) => event.severity !== 'info' && event.status !== 'resolved')
     .slice()
     .sort((a, b) => {
       const aPriority = severityPresentation[a.severity]?.priority ?? fallbackPresentation.priority;
@@ -105,10 +120,11 @@ export function AlertsPanel({ events, onEventSelect }: AlertsPanelProps) {
             return (
               <button
                 type="button"
+                disabled={!onEventSelect}
                 className={`notification-item severity-${presentation.className}`}
                 key={event.id}
                 onClick={() => onEventSelect?.(event.id)}
-                aria-label={`${event.title}. ${presentation.label}. ${event.timestamp}. ${event.status}`}
+                aria-label={`${event.title}. ${presentation.label}. ${event.timestamp}. ${eventStatusLabel(event.status)}`}
               >
                 <span className="notification-icon">
                   <Icon size={16} />
@@ -123,7 +139,7 @@ export function AlertsPanel({ events, onEventSelect }: AlertsPanelProps) {
                   <span className="notification-time">
                     <span>{event.timestamp}</span>
                     <span className="notification-time-separator">·</span>
-                    <span>{event.status}</span>
+                    <span>{eventStatusLabel(event.status)}</span>
                   </span>
                 </span>
               </button>
