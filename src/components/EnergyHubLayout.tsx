@@ -259,7 +259,7 @@ export function EnergyHubLayout({
 
               <div className="object-context">
                 {energyObject.typeLabel ?? 'EnergyObject'}
-                {' В· '}
+                {' · '}
                 {energyObject.locationLabel ?? energyObject.name}
               </div>
             </div>
@@ -449,7 +449,7 @@ export function EnergyHubLayout({
             <span>ENERGY HUB MVP</span>
 
             <span>
-              UI presentation layer В· no backend
+              UI presentation layer · no backend
             </span>
 
             <span className="footer-status">

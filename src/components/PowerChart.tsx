@@ -25,7 +25,9 @@ export function PowerChart({
   const periodLabel =
     period === '24h'
       ? 'Последние 24 часа · демонстрационные данные'
-      : 'Нет данных для выбранного периода';
+      : period === '7d'
+        ? 'Последние 7 дней · демонстрационные данные'
+        : 'Последние 30 дней · демонстрационные данные';
 
   const series = data?.series ?? [];
   const option: EChartsOption = {
@@ -118,7 +120,6 @@ export function PowerChart({
   };
 
   const hasChartData = Boolean(
-    period === '24h' &&
       data &&
       data.labels.length > 0 &&
       series.length > 0 &&
