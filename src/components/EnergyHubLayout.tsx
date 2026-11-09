@@ -64,7 +64,9 @@ const roleDescriptions: Record<
 const navTargets: Record<SidebarPageId, string> = {
   overview: 'overview',
   'energy-hub': 'energy-hub',
-  objects: 'energy-hub',
+  objects: 'objects',
+  analytics: 'analytics',
+  notifications: 'notifications',
   services: 'services',
   'data-quality': 'data-quality',
   history: 'history',
@@ -167,8 +169,9 @@ export function EnergyHubLayout({
   // Attention counter
   const attentionCount = events.filter(
     (event) =>
-      event.severity === 'warning' ||
-      event.severity === 'critical',
+      event.status !== 'resolved' &&
+      (event.severity === 'warning' ||
+        event.severity === 'critical'),
   ).length;
 
   // Navigation
@@ -227,9 +230,10 @@ export function EnergyHubLayout({
         <Header
           energyObject={energyObject}
           role={role}
-          onRoleChange={(nextRole) =>
-            onRoleChange?.(nextRole)
-          }
+          onRoleChange={(nextRole) => {
+            setActivePage('overview');
+            onRoleChange?.(nextRole);
+          }}
           theme={theme}
           onThemeChange={setTheme}
           period={period}
@@ -370,10 +374,7 @@ export function EnergyHubLayout({
                     data={chartData}
                   />
 
-                  <EventTimeline
-                    events={events}
-                    onEventSelect={onEventSelect}
-                  />
+                  <EventTimeline events={events} />
 
                 </div>
 

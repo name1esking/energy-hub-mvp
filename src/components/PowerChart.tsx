@@ -24,10 +24,8 @@ export function PowerChart({
 
   const periodLabel =
     period === '24h'
-      ? 'Последние 24 часа'
-      : period === '7d'
-        ? 'Последние 7 дней'
-        : 'Последние 30 дней';
+      ? 'Последние 24 часа · демонстрационные данные'
+      : 'Нет данных для выбранного периода';
 
   const series = data?.series ?? [];
   const option: EChartsOption = {
@@ -119,7 +117,13 @@ export function PowerChart({
     })),
   };
 
-  const hasChartData = Boolean(data && data.labels.length > 0 && series.length > 0);
+  const hasChartData = Boolean(
+    period === '24h' &&
+      data &&
+      data.labels.length > 0 &&
+      series.length > 0 &&
+      series.every((item) => item.values.length === data.labels.length),
+  );
 
   return (
     <section className="panel chart-panel" id="analytics" aria-labelledby="power-chart-title">

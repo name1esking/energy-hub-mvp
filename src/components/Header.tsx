@@ -42,9 +42,9 @@ export function Header({
         <label className="select-wrap period-select">
           <span className="sr-only">Период</span>
           <select value={period} onChange={(event) => onPeriodChange(event.target.value as Period)}>
-            <option value="24h">Последние 24 часа</option>
-            <option value="7d">Последние 7 дней</option>
-            <option value="30d">Последние 30 дней</option>
+            <option value="24h">Последние 24 часа · демо</option>
+            <option value="7d" disabled>Последние 7 дней · нет данных</option>
+            <option value="30d" disabled>Последние 30 дней · нет данных</option>
           </select>
           <ChevronDown size={14} />
         </label>

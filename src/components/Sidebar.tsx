@@ -1,6 +1,8 @@
 import {
   Activity,
+  Bell,
   Building2,
+  Database,
   History,
   LayoutDashboard,
   Network,
@@ -26,14 +28,81 @@ const roleLabels: Record<UiRole, string> = {
   building_owner: 'Собственник здания',
 };
 
-const navigation: Array<{ id: SidebarPageId; label: string; icon: typeof LayoutDashboard }> = [
-  { id: 'overview', label: 'Обзор', icon: LayoutDashboard },
-  { id: 'energy-hub', label: 'Схема энергохаба', icon: Network },
-  { id: 'objects', label: 'Объекты', icon: Building2 },
-  { id: 'services', label: 'Энергетические сервисы', icon: PlugZap },
-  { id: 'data-quality', label: 'Качество данных', icon: Activity },
-  { id: 'history', label: 'История событий', icon: History },
-];
+type NavigationItem = {
+  id: SidebarPageId;
+  label: string;
+  icon: typeof LayoutDashboard;
+};
+
+const overviewItem: NavigationItem = {
+  id: 'overview',
+  label: 'Обзор',
+  icon: LayoutDashboard,
+};
+const analyticsItem: NavigationItem = {
+  id: 'analytics',
+  label: 'Аналитика',
+  icon: Activity,
+};
+const notificationsItem: NavigationItem = {
+  id: 'notifications',
+  label: 'Уведомления',
+  icon: Bell,
+};
+const servicesItem: NavigationItem = {
+  id: 'services',
+  label: 'Энергетические сервисы',
+  icon: PlugZap,
+};
+const qualityItem: NavigationItem = {
+  id: 'data-quality',
+  label: 'Качество данных',
+  icon: Database,
+};
+const historyItem: NavigationItem = {
+  id: 'history',
+  label: 'История событий',
+  icon: History,
+};
+
+const navigationByRole: Record<UiRole, NavigationItem[]> = {
+  platform_admin: [
+    overviewItem,
+    { id: 'objects', label: 'Объекты', icon: Building2 },
+    analyticsItem,
+    notificationsItem,
+    servicesItem,
+    qualityItem,
+    historyItem,
+  ],
+  portfolio_owner: [
+    overviewItem,
+    { id: 'energy-hub', label: 'Схема энергохаба', icon: Network },
+    analyticsItem,
+    notificationsItem,
+    servicesItem,
+    qualityItem,
+    historyItem,
+  ],
+  hub_operator: [
+    overviewItem,
+    { id: 'energy-hub', label: 'Схема энергохаба', icon: Network },
+    analyticsItem,
+    notificationsItem,
+    servicesItem,
+    qualityItem,
+    historyItem,
+  ],
+  building_owner: [
+    overviewItem,
+    { id: 'energy-hub', label: 'Схема энергохаба', icon: Network },
+    analyticsItem,
+    notificationsItem,
+    servicesItem,
+    qualityItem,
+    historyItem,
+  ],
+};
 
 export function Sidebar({ activePage, role, onNavigate, mobileOpen, onClose }: SidebarProps) {
   return (
@@ -58,7 +127,7 @@ export function Sidebar({ activePage, role, onNavigate, mobileOpen, onClose }: S
 
         <div className="sidebar-caption">WORKSPACE</div>
         <nav className="sidebar-nav">
-          {navigation.map(({ id, label, icon: Icon }) => (
+          {navigationByRole[role].map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               type="button"

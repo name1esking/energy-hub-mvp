@@ -27,10 +27,12 @@ export default function App() {
       chartData={demoPowerChart}
       qualityRows={demoQualityRows}
       topology={demoTopology}
-      onAssetSelect={(assetId) => console.info('Selected Asset view:', assetId)}
-      onEventSelect={(eventId) => console.info('Selected Event view:', eventId)}
-      onServiceSelect={(serviceId) => console.info('Selected Service view:', serviceId)}
-      onMeasurementSelect={(measurementId) => console.info('Selected Measurement view:', measurementId)}
+      onEventSelect={() =>
+        document.getElementById('history')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        })
+      }
     />
   );
 }
