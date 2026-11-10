@@ -109,7 +109,7 @@ export function PlatformAdminDashboard({
             aria-label="Уведомления и история событий"
           >
             <AlertsPanel events={events} onEventSelect={onEventSelect} />
-            <EventTimeline events={events} />
+            <EventTimeline events={events} onEventSelect={onEventSelect} />
           </section>
         </div>
 
