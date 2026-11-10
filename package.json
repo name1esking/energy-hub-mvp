@@ -3,13 +3,19 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "oxlint",
-    "preview": "vite preview"
-  },
+"scripts": {
+  "dev": "vite",
+  "build": "tsc -b && vite build",
+  "lint": "oxlint",
+  "preview": "vite preview",
+  "test": "vitest run",
+  "test:watch": "vitest"
+},
   "dependencies": {
+    "@xyflow/react": "^12.12.1",
+    "echarts": "^6.1.0",
+    "echarts-for-react": "^3.0.6",
+    "lucide-react": "^1.70.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
@@ -20,6 +26,7 @@
     "@vitejs/plugin-react": "^6.1.2",
     "oxlint": "^1.90.0",
     "typescript": "~7.0.2",
-    "vite": "^8.3.6"
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
   }
 }
