@@ -14,6 +14,7 @@ import { EnergyObjectCard } from './EnergyObjectCard';
 import { Header } from './Header';
 import { MetricCard } from './MetricCard';
 import { PowerChart } from './PowerChart';
+import { RecordDetailsDialog } from './RecordDetailsDialog';
 import { ServicesPanel } from './ServicesPanel';
 import { Sidebar } from './Sidebar';
 
@@ -24,6 +25,7 @@ import type {
   EnergyTopologyView,
   EventView,
   MetricCardView,
+  MeasurementView,
   Period,
   PowerChartView,
   ServiceView,
@@ -72,6 +74,7 @@ export interface EnergyHubLayoutProps {
   assets: AssetView[];
   metrics: MetricCardView[];
   events: EventView[];
+  measurements: MeasurementView[];
   services: ServiceView[];
 
   chartData: PowerChartView | null;
@@ -99,6 +102,7 @@ export function EnergyHubLayout({
   assets,
   metrics,
   events,
+  measurements,
   services,
   chartData,
   qualityRows,
@@ -138,6 +142,9 @@ export function EnergyHubLayout({
   const [selectedAssetId, setSelectedAssetId] =
     useState<string | null>(null);
 
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [selectedMeasurementId, setSelectedMeasurementId] = useState<string | null>(null);
+
   // Persist theme
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -147,9 +154,18 @@ export function EnergyHubLayout({
 
   // Selected Asset
   const selectedAsset = useMemo(
-    () =>
-      assets.find((asset) => asset.id === selectedAssetId) ?? null,
+    () => assets.find((asset) => asset.id === selectedAssetId) ?? null,
     [assets, selectedAssetId],
+  );
+
+  const selectedEvent = useMemo(
+    () => events.find((event) => event.id === selectedEventId) ?? null,
+    [events, selectedEventId],
+  );
+
+  const selectedMeasurement = useMemo(
+    () => measurements.find((measurement) => measurement.id === selectedMeasurementId) ?? null,
+    [measurements, selectedMeasurementId],
   );
 
   // Current role description
@@ -208,6 +224,23 @@ export function EnergyHubLayout({
   // Asset reset
   const handleAssetReset = useCallback(() => {
     setSelectedAssetId(null);
+  }, []);
+
+  const handleEventSelect = useCallback((eventId: string) => {
+    setSelectedEventId(eventId);
+    setSelectedMeasurementId(null);
+    onEventSelect?.(eventId);
+  }, [onEventSelect]);
+
+  const handleMeasurementSelect = useCallback((measurementId: string) => {
+    setSelectedMeasurementId(measurementId);
+    setSelectedEventId(null);
+    onMeasurementSelect?.(measurementId);
+  }, [onMeasurementSelect]);
+
+  const handleDetailsClose = useCallback(() => {
+    setSelectedEventId(null);
+    setSelectedMeasurementId(null);
   }, []);
 
   return (
@@ -322,9 +355,9 @@ export function EnergyHubLayout({
               selectedAssetId={selectedAssetId}
               onAssetSelect={handleAssetSelect}
               onAssetReset={handleAssetReset}
-              onEventSelect={onEventSelect}
+              onEventSelect={handleEventSelect}
               onServiceSelect={onServiceSelect}
-              onMeasurementSelect={onMeasurementSelect}
+              onMeasurementSelect={handleMeasurementSelect}
             />
           )}
 
@@ -345,9 +378,9 @@ export function EnergyHubLayout({
               selectedAssetId={selectedAssetId}
               onAssetSelect={handleAssetSelect}
               onAssetReset={handleAssetReset}
-              onEventSelect={onEventSelect}
+              onEventSelect={handleEventSelect}
               onServiceSelect={onServiceSelect}
-              onMeasurementSelect={onMeasurementSelect}
+              onMeasurementSelect={handleMeasurementSelect}
             />
           )}
 
@@ -384,7 +417,7 @@ export function EnergyHubLayout({
                     data={chartData}
                   />
 
-                  <EventTimeline events={events} />
+                  <EventTimeline events={events} onEventSelect={handleEventSelect} />
 
                 </div>
 
@@ -396,12 +429,12 @@ export function EnergyHubLayout({
 
                   <AlertsPanel
                     events={events}
-                    onEventSelect={onEventSelect}
+                    onEventSelect={handleEventSelect}
                   />
 
                   <DataQualityPanel
                     rows={qualityRows}
-                    onCellSelect={onMeasurementSelect}
+                    onCellSelect={handleMeasurementSelect}
                   />
 
                   <AssetQuickView
@@ -442,6 +475,12 @@ export function EnergyHubLayout({
               </div>
             </>
           )}
+
+          <RecordDetailsDialog
+            event={selectedEvent}
+            measurement={selectedMeasurement}
+            onClose={handleDetailsClose}
+          />
 
           {/* FOOTER */}
           <footer className="dashboard-footer">

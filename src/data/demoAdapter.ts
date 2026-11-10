@@ -336,6 +336,7 @@ export function buildDashboardData(
   return {
     energyObject,
     assets: buildAssets(siteId),
+    measurements: getSiteMeasurements(siteId).map(toMeasurementView),
     metrics: buildMetrics(siteId, period),
     events: buildEvents(siteId),
     services,
